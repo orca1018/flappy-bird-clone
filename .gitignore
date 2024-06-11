@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Build automation for UNIX
+makefile
+
+# DOS (Window) batch script's environment
+*.bat
