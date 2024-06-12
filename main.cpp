@@ -19,21 +19,17 @@ struct Audio {
   Sound wind;
 };
 
-/*
-base.png
-gameover.png            redbird-downflap.png
-yellowbird-midflap.png  bluebird-downflap.png
-message.png             redbird-midflap.png
-yellowbird-upflap.png  background-day.png      bluebird-midflap.png
-pipe-green.png          redbird-upflap.png
-background-night.png    bluebird-upflap.png     pipe-red.png
-yellowbird-downflap.png
-*/
-struct Sprite {
+struct Textures {
   Texture flappy[3];
+  Texture base;
+  Texture gameover;
+  Texture message;
+  Texture backgraound;
+  Texture pipe;
 };
 
 int main() {
+
   sf::RenderWindow window(sf::VideoMode(288, 512), "Flappy Bird");
   window.setFramerateLimit(120);
   window.setKeyRepeatEnabled(false);
@@ -41,7 +37,7 @@ int main() {
 
   srand(time(0));
 
-  // load sounds
+  // load sounds to RAM
   struct Audio sounds;
   sounds.die_buffer.loadFromFile("./audio/die.wav");
   sounds.die.setBuffer(sounds.die_buffer);
@@ -53,6 +49,22 @@ int main() {
   sounds.swoosh.setBuffer(sounds.swoosh_buffer);
   sounds.wind_buffer.loadFromFile("./audio/wind.wav");
   sounds.wind.setBuffer(sounds.wind_buffer);
+
+  // load textures to RAM
+  struct Textures textures;
+  textures.flappy[0].loadFromFile("./sprites/yellowbird-upflap.png");
+  textures.flappy[1].loadFromFile("./sprites/yellowbird-midflap.png");
+  textures.flappy[2].loadFromFile("./sprites/yellowbird-downflap.png");
+  /* red bird
+    textures.flappy[0].loadFromFile("./sprites/redbird-downflap.png");
+    textures.flappy[1].loadFromFile("./sprites/redbird-downflap.png");
+    textures.flappy[2].loadFromFile("./sprites/redbird-downflap.png");
+  */
+  /* blue bird
+    textures.flappy[0].loadFromFile("./sprites/bluebird-downflap.png");
+    textures.flappy[1].loadFromFile("./sprites/bluebird-downflap.png");
+    textures.flappy[2].loadFromFile("./sprites/bluebird-downflap.png");
+      */
 
   float x = 144.0f;
   float y = 256.0f;
