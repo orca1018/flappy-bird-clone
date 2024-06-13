@@ -82,6 +82,14 @@ struct Preference {
   Texture pipe;
 };
 
+void settings(Preference preference, Textures textures) {
+  preference.flappy[0] = textures.flappy[0][0];
+  preference.flappy[1] = textures.flappy[0][1];
+  preference.flappy[2] = textures.flappy[0][2];
+  preference.background = textures.background[0];
+  preference.pipe = textures.pipe[0];
+}
+
 int main() {
   RenderWindow window(VideoMode(288, 512), "Flappy Bird");
   window.setFramerateLimit(120);
@@ -99,11 +107,7 @@ int main() {
   Game game;
 
   Preference preference;
-  preference.flappy[0] = textures.flappy[0][0];
-  preference.flappy[1] = textures.flappy[0][1];
-  preference.flappy[2] = textures.flappy[0][2];
-  preference.background = textures.background[0];
-  preference.pipe = textures.pipe[0];
+  settings(preference, textures);
 
   // Set up bird sprite
   Sprite birdSprite;
