@@ -70,10 +70,16 @@ void load_textures(Textures &textures) {
 enum game_state { waiting, started, gameover };
 
 struct Game {
-    unsigned short int score = 0;
-    unsigned short int highscore = 0;
-    unsigned int frames = 0;
-    game_state game_state = waiting;
+  unsigned short int score = 0;
+  unsigned short int highscore = 0;
+  unsigned int frames = 0;
+  game_state game_state = waiting;
+};
+
+struct Preference {
+    Texture flappy;
+    Texture background;
+    Texture pipe;
 };
 
 int main() {
@@ -89,6 +95,8 @@ int main() {
 
   Textures textures;
   load_textures(textures);
+
+
 
   // Set up bird sprite
   Sprite birdSprite;
