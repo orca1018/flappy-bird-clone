@@ -77,9 +77,9 @@ struct Game {
 };
 
 struct Preference {
-    Texture flappy;
-    Texture background;
-    Texture pipe;
+  Texture flappy[3];
+  Texture background;
+  Texture pipe;
 };
 
 int main() {
@@ -96,11 +96,18 @@ int main() {
   Textures textures;
   load_textures(textures);
 
+  Game game;
 
+  Preference preference;
+  preference.flappy[0] = textures.flappy[0][0];
+  preference.flappy[1] = textures.flappy[0][1];
+  preference.flappy[2] = textures.flappy[0][2];
+  preference.background = textures.background[0];
+  preference.pipe = textures.pipe[0];
 
   // Set up bird sprite
   Sprite birdSprite;
-  birdSprite.setTexture(textures.flappy[0]);
+  birdSprite.setTexture(textures.flappy[1][0]);
 
   float x = 144.0f;
   float y = 256.0f;
