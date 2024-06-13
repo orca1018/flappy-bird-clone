@@ -19,7 +19,7 @@ struct Audio {
   Sound wind;
 };
 
-void loadAudio(Audio &sounds) {
+void load_audio(Audio &sounds) {
   sounds.die_buffer.loadFromFile("./audio/die.wav");
   sounds.die.setBuffer(sounds.die_buffer);
   sounds.hit_buffer.loadFromFile("./audio/hit.wav");
@@ -33,36 +33,48 @@ void loadAudio(Audio &sounds) {
 }
 
 struct Textures {
-  Texture flappy[3];
+  Texture flappy[3][3];
   Texture base;
   Texture gameover;
   Texture message;
-  Texture background;
-  Texture pipe;
+  Texture background[2];
+  Texture pipe[2];
 };
 
-void loadTextures(Textures &textures) {
-  textures.flappy[0].loadFromFile("./sprites/yellowbird-upflap.png");
-  textures.flappy[1].loadFromFile("./sprites/yellowbird-midflap.png");
-  textures.flappy[2].loadFromFile("./sprites/yellowbird-downflap.png");
-  /* red bird
-    textures.flappy[0].loadFromFile("./sprites/redbird-downflap.png");
-    textures.flappy[1].loadFromFile("./sprites/redbird-downflap.png");
-    textures.flappy[2].loadFromFile("./sprites/redbird-downflap.png");
-  */
-  /* blue bird
-    textures.flappy[0].loadFromFile("./sprites/bluebird-downflap.png");
-    textures.flappy[1].loadFromFile("./sprites/bluebird-downflap.png");
-    textures.flappy[2].loadFromFile("./sprites/bluebird-downflap.png");
-  */
+void load_textures(Textures &textures) {
+  // yellow bird
+  textures.flappy[0][0].loadFromFile("./sprites/yellowbird-upflap.png");
+  textures.flappy[0][1].loadFromFile("./sprites/yellowbird-midflap.png");
+  textures.flappy[0][2].loadFromFile("./sprites/yellowbird-downflap.png");
+  // red bird
+  textures.flappy[1][0].loadFromFile("./sprites/redbird-downflap.png");
+  textures.flappy[1][1].loadFromFile("./sprites/redbird-downflap.png");
+  textures.flappy[1][2].loadFromFile("./sprites/redbird-downflap.png");
+  // blue bird
+  textures.flappy[2][0].loadFromFile("./sprites/bluebird-downflap.png");
+  textures.flappy[2][1].loadFromFile("./sprites/bluebird-downflap.png");
+  textures.flappy[2][2].loadFromFile("./sprites/bluebird-downflap.png");
   textures.base.loadFromFile("./sprites/base.png");
   textures.gameover.loadFromFile("./sprites/gameover.png");
   textures.message.loadFromFile("./sprites/message.png");
-  textures.background.loadFromFile("./sprites/background-day.png");
-  // textures.background.loadFromFile("./sprites/background-night.png");
-  textures.pipe.loadFromFile("./sprites/pipe-green.png");
-  // textures.pipe.loadFromFile("./sprites/pipe-red.png");
+  // day background
+  textures.background[0].loadFromFile("./sprites/background-day.png");
+  // night background
+  textures.background[1].loadFromFile("./sprites/background-night.png");
+  // green pipe
+  textures.pipe[0].loadFromFile("./sprites/pipe-green.png");
+  // red pipe
+  textures.pipe[1].loadFromFile("./sprites/pipe-red.png");
 }
+
+enum game_state { waiting, started, gameover };
+
+struct Game {
+    unsigned short int score = 0;
+    unsigned short int highscore = 0;
+    unsigned int frames = 0;
+    game_state game_state = waiting;
+};
 
 int main() {
   RenderWindow window(VideoMode(288, 512), "Flappy Bird");
@@ -72,15 +84,13 @@ int main() {
 
   srand(time(0));
 
-  // load sounds to RAM
   Audio sounds;
-  loadAudio(sounds);
+  load_audio(sounds);
 
-  // load textures to RAM
   Textures textures;
-  loadTextures(textures);
+  load_textures(textures);
 
-    // Set up bird sprite
+  // Set up bird sprite
   Sprite birdSprite;
   birdSprite.setTexture(textures.flappy[0]);
 
