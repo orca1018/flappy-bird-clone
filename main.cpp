@@ -41,20 +41,7 @@ struct Textures {
   Texture pipe;
 };
 
-int main() {
-  RenderWindow window(VideoMode(288, 512), "Flappy Bird");
-  window.setFramerateLimit(120);
-  window.setKeyRepeatEnabled(false);
-  window.setVerticalSyncEnabled(true);
-
-  srand(time(0));
-
-  // load sounds to RAM
-  Audio sounds;
-  loadAudio(sounds);
-
-  // load textures to RAM
-  Textures textures;
+void loadTextures(Textures &textures) {
   textures.flappy[0].loadFromFile("./sprites/yellowbird-upflap.png");
   textures.flappy[1].loadFromFile("./sprites/yellowbird-midflap.png");
   textures.flappy[2].loadFromFile("./sprites/yellowbird-downflap.png");
@@ -75,8 +62,25 @@ int main() {
   // textures.background.loadFromFile("./sprites/background-night.png");
   textures.pipe.loadFromFile("./sprites/pipe-green.png");
   // textures.pipe.loadFromFile("./sprites/pipe-red.png");
+}
 
-  // Set up bird sprite
+int main() {
+  RenderWindow window(VideoMode(288, 512), "Flappy Bird");
+  window.setFramerateLimit(120);
+  window.setKeyRepeatEnabled(false);
+  window.setVerticalSyncEnabled(true);
+
+  srand(time(0));
+
+  // load sounds to RAM
+  Audio sounds;
+  loadAudio(sounds);
+
+  // load textures to RAM
+  Textures textures;
+  loadTextures(textures);
+
+    // Set up bird sprite
   Sprite birdSprite;
   birdSprite.setTexture(textures.flappy[0]);
 
