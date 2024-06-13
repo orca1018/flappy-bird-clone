@@ -24,7 +24,7 @@ struct Textures {
   Texture base;
   Texture gameover;
   Texture message;
-  Texture backgraound;
+  Texture background;
   Texture pipe;
 };
 
@@ -64,61 +64,68 @@ int main() {
     textures.flappy[0].loadFromFile("./sprites/bluebird-downflap.png");
     textures.flappy[1].loadFromFile("./sprites/bluebird-downflap.png");
     textures.flappy[2].loadFromFile("./sprites/bluebird-downflap.png");
-      */
+    */
+  textures.base.loadFromFile("./sprites/base.png");
+  textures.gameover.loadFromFile("./sprites/gameover.png");
+  textures.message.loadFromFile("./sprites/message.png");
+  textures.background.loadFromFile("./sprites/background-day.png");
+  // texture.background.loadFromFile("./sprites/background-night.png");
+  textures.pipe.loadFromFile("./sprites/pipe-green.png");
+  // textures.pipe.loadFromFile("./sprites/pipe-red.png");
+};
 
-  float x = 144.0f;
-  float y = 256.0f;
+float x = 144.0f;
+float y = 256.0f;
 
-  // will calibrate these value later
-  float velocity = 0.0f;
-  const float gravity = 0.35f;
-  const float flapStrength = -6.0f;
-  const float maxVelocity = 15.0f; // Maximum falling speed
+// will calibrate these value later
+float velocity = 0.0f;
+const float gravity = 0.35f;
+const float flapStrength = -6.0f;
+const float maxVelocity = 15.0f; // Maximum falling speed
 
-  // circle representing the bird
-  sf::CircleShape circle(10);
-  circle.setFillColor(sf::Color::Red);
-  circle.setPosition(x, y);
+// circle representing the bird
+sf::CircleShape circle(10);
+circle.setFillColor(sf::Color::Red);
+circle.setPosition(x, y);
 
-  while (window.isOpen()) {
+while (window.isOpen()) {
 
-    sf::Event event;
-    while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed) {
-        window.close();
-      }
-      // Development phase shortcut to close the window
-      if (event.type == Event::KeyPressed &&
-          event.key.code == sf::Keyboard::Q) {
-        window.close();
-      }
-      if (event.type == Event::KeyPressed &&
-          event.key.code == sf::Keyboard::Space) {
-        velocity = flapStrength;
-        sounds.swoosh.play();
-      }
+  sf::Event event;
+  while (window.pollEvent(event)) {
+    if (event.type == sf::Event::Closed) {
+      window.close();
     }
-
-    velocity += gravity;
-    if (velocity > maxVelocity) {
-      velocity = maxVelocity;
+    // Development phase shortcut to close the window
+    if (event.type == Event::KeyPressed && event.key.code == sf::Keyboard::Q) {
+      window.close();
     }
-
-    y += velocity;
-
-    if (y < 0) {
-      y = 0;
-      velocity = 0;
-    } else if (y > window.getSize().y - circle.getRadius() * 2) {
-      y = window.getSize().y - circle.getRadius() * 2;
-      velocity = 0;
+    if (event.type == Event::KeyPressed &&
+        event.key.code == sf::Keyboard::Space) {
+      velocity = flapStrength;
+      sounds.swoosh.play();
     }
-
-    window.clear();
-    circle.setPosition(x, y);
-    window.draw(circle);
-    window.display();
   }
 
-  return 0;
+  velocity += gravity;
+  if (velocity > maxVelocity) {
+    velocity = maxVelocity;
+  }
+
+  y += velocity;
+
+  if (y < 0) {
+    y = 0;
+    velocity = 0;
+  } else if (y > window.getSize().y - circle.getRadius() * 2) {
+    y = window.getSize().y - circle.getRadius() * 2;
+    velocity = 0;
+  }
+
+  window.clear();
+  circle.setPosition(x, y);
+  window.draw(circle);
+  window.display();
+}
+
+return 0;
 }
