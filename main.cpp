@@ -109,7 +109,7 @@ void restart(float *x, float *y, Physics &physics, Game &game) {
 
 int main() {
   sf::RenderWindow window(sf::VideoMode(288, 512), "Flappy Bird");
-  window.setFramerateLimit(120);
+  window.setFramerateLimit(60);
   window.setKeyRepeatEnabled(false);
   window.setVerticalSyncEnabled(true);
 
@@ -189,9 +189,9 @@ int main() {
 
     window.clear();
     window.draw(background);
-    window.draw(base);       
+    window.draw(base);
     flappy[0].setPosition(x, y);
-    window.draw(flappy[0]); 
+    window.draw(flappy[0]);
     window.display();
   }
 
