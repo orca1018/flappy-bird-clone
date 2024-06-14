@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-// remove namespaces
+// will remove namespaces later
 using namespace sf;
 using namespace std;
 
