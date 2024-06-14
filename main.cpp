@@ -90,6 +90,16 @@ void settings(Preference preference, Textures textures) {
   preference.pipe = textures.pipe[0];
 }
 
+struct Physics {
+  double velocity = 0.0f;
+  // calebrate these constant later
+  const float gravity = 0.35f;
+  const float flap_strength = -6.0f;
+  const float max_velocity = 15.0f;
+  const float initial_x = 144.0f;
+  const float initial_y = 256.0f;
+};
+
 int main() {
   RenderWindow window(VideoMode(288, 512), "Flappy Bird");
   window.setFramerateLimit(120);
@@ -109,18 +119,15 @@ int main() {
   Preference preference;
   settings(preference, textures);
 
-  // Set up bird sprite
-  Sprite birdSprite;
-  birdSprite.setTexture(textures.flappy[1][0]);
+  Physics physics;
 
-  float x = 144.0f;
-  float y = 256.0f;
+  Sprite flappy[3];
+  flappy[0].setTexture(preference.flappy[0]);
+  flappy[1].setTexture(preference.flappy[1]);
+  flappy[2].setTexture(preference.flappy[2]);
 
-  // will calibrate these value later
-  float velocity = 0.0f;
-  const float gravity = 0.35f;
-  const float flapStrength = -6.0f;
-  const float maxVelocity = 15.0f; // Maximum falling speed
+  float x = physics.initial_x;
+  float y = physics.initial_y;
 
   while (window.isOpen()) {
     Event event;
@@ -134,29 +141,29 @@ int main() {
       }
       if (event.type == Event::KeyPressed &&
           event.key.code == Keyboard::Space) {
-        velocity = flapStrength;
+        physics.velocity = physics.flap_strength;
         sounds.swoosh.play();
       }
     }
 
-    velocity += gravity;
-    if (velocity > maxVelocity) {
-      velocity = maxVelocity;
+    physics.velocity += physics.gravity;
+    if (physics.velocity > physics.max_velocity) {
+      physics.velocity = physics.max_velocity;
     }
 
-    y += velocity;
+    y += physics.velocity;
 
     if (y < 0) {
       y = 0;
-      velocity = 0;
-    } else if (y > window.getSize().y - birdSprite.getGlobalBounds().height) {
-      y = window.getSize().y - birdSprite.getGlobalBounds().height;
-      velocity = 0;
+      physics.velocity = 0;
+    } else if (y > window.getSize().y - flappy[0].getGlobalBounds().height) {
+      y = window.getSize().y - flappy[0].getGlobalBounds().height;
+      physics.velocity = 0;
     }
 
     window.clear();
-    birdSprite.setPosition(x, y);
-    window.draw(birdSprite);
+    flappy[0].setPosition(x, y);
+    window.draw(flappy[0]);
     window.display();
   }
 
