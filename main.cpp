@@ -98,10 +98,11 @@ struct Physics {
   const float initial_y = 256.0f;
 };
 
-void restart(float *x, float *y, Physics physics, Game &game) {
+void restart(float *x, float *y, Physics &physics, Game &game) {
   game.score = 0;
   game.frames = 0;
   game.game_state = waiting;
+  physics.velocity = 0;
   *x = physics.initial_x;
   *y = physics.initial_y;
 }
@@ -164,30 +165,33 @@ int main() {
         }
       }
     }
-    // Update physics
-    physics.velocity += physics.gravity;
-    if (physics.velocity > physics.max_velocity) {
-      physics.velocity = physics.max_velocity;
-    }
 
-    y += physics.velocity;
+    if (game.game_state == started) {
+      physics.velocity += physics.gravity;
+      if (physics.velocity > physics.max_velocity) {
+        physics.velocity = physics.max_velocity;
+      }
+      y += physics.velocity;
 
-    // Boundary check for Flappy Bird
-    if (y < 0) {
-      y = 0;
-      physics.velocity = 0;
-    } else if (y > window.getSize().y - base.getGlobalBounds().height -
-                       flappy[0].getGlobalBounds().height) {
-      y = window.getSize().y - base.getGlobalBounds().height -
-          flappy[0].getGlobalBounds().height;
-      physics.velocity = 0;
+      if (y < 0) {
+        y = 0;
+        physics.velocity = 0;
+      } else if (y > window.getSize().y - base.getGlobalBounds().height -
+                         flappy[0].getGlobalBounds().height) {
+        y = window.getSize().y - base.getGlobalBounds().height -
+            flappy[0].getGlobalBounds().height;
+        physics.velocity = 0;
+        game.game_state = gameover;
+        sounds.hit.play();
+        sounds.die.play();
+      }
     }
 
     window.clear();
-    window.draw(background); // Draw background
-    window.draw(base);       // Draw base
+    window.draw(background);
+    window.draw(base);       
     flappy[0].setPosition(x, y);
-    window.draw(flappy[0]); // Draw Flappy Bird
+    window.draw(flappy[0]); 
     window.display();
   }
 
