@@ -230,7 +230,8 @@ int main() {
         } else if (game.game_state == gameover) {
           restart(&x, &y, physics, game, pipes_vec);
         }
-      }     }
+      }
+    }
 
     if (game.game_state == started) {
       physics.velocity += physics.gravity;
@@ -288,6 +289,10 @@ int main() {
         }
       }
     }
+
+        if (game.score > game.frames) {
+            restart(&x, &y, physics, game, pipes_vec);
+        }
 
     window.clear();
     window.draw(background_s);
