@@ -195,10 +195,9 @@ int main() {
                          flappy[0].getGlobalBounds().height) {
         y = window.getSize().y - base_s.getGlobalBounds().height -
             flappy[0].getGlobalBounds().height;
-        physics.velocity = 0;
-        game.game_state = gameover;
         sounds.hit.play();
         sounds.die.play();
+        restart(&x, &y, physics, game);
       }
     }
 
