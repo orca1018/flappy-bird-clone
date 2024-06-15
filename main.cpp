@@ -87,7 +87,7 @@ void settings(Preference &preference, const Textures &textures) {
   preference.flappy[0] = textures.flappy[0][0];
   preference.flappy[1] = textures.flappy[0][1];
   preference.flappy[2] = textures.flappy[0][2];
-  preference.background = textures.background[0];
+  preference.background = textures.background[1];
   preference.pipe = textures.pipe[0];
 }
 
