@@ -136,8 +136,8 @@ int main() {
   sf::Sprite base_s;
   base_s.setTexture(preference.base);
   base_s.setPosition(0,
-                   window.getSize().y -
-                       preference.base.getSize().y); // Position at the bottom
+                     window.getSize().y -
+                         preference.base.getSize().y); // Position at the bottom
 
   sf::Sprite flappy[3];
   flappy[0].setTexture(preference.flappy[0]);
@@ -210,12 +210,14 @@ int main() {
     } else if (game.game_state == waiting) {
       window.draw(message_s);
     } else {
-      flappy[0].setPosition(x, y);
-      window.draw(flappy[0]);
+      int frame = (game.frames / 5) % 3;
+      flappy[frame].setPosition(x, y);
+      window.draw(flappy[frame]);
     }
     flappy[0].setPosition(x, y);
-    window.draw(flappy[0]);
     window.display();
+
+    game.frames++;
   }
 
   return 0;
