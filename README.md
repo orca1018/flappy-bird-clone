@@ -93,7 +93,7 @@ Here's the current ranking for the Flappy Bird clone challenge:
 |------|----------------|-------|
 | 1    | orca1018       | 58    |
 
-You can submit your score in the submission director. 
+You can submit your score in the submission directory. 
 
 ## Credits
 I would like to give credit to the following repositories for providing inspiration and assets for this project:
