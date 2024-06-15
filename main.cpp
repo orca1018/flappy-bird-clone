@@ -18,6 +18,7 @@ struct Audio {
   sf::Sound wing;
 };
 
+// load audios to RAM
 void load_audio(Audio &sounds) {
   sounds.die_buffer.loadFromFile("./audio/die.wav");
   sounds.die.setBuffer(sounds.die_buffer);
@@ -40,6 +41,7 @@ struct Textures {
   sf::Texture pipe[2];
 };
 
+// loat sprites to RAM
 void load_textures(Textures &textures) {
   // yellow bird
   textures.flappy[0][0].loadFromFile("./sprites/yellowbird-upflap.png");
@@ -78,16 +80,15 @@ struct Preference {
   sf::Texture flappy[3];
   sf::Texture background;
   sf::Texture pipe;
-  sf::Texture base;
 };
 
+// set flappy, background and pipe color here
 void settings(Preference &preference, const Textures &textures) {
   preference.flappy[0] = textures.flappy[0][0];
   preference.flappy[1] = textures.flappy[0][1];
   preference.flappy[2] = textures.flappy[0][2];
   preference.background = textures.background[0];
   preference.pipe = textures.pipe[0];
-  preference.base = textures.base;
 }
 
 struct Physics {
@@ -107,13 +108,13 @@ void restart(float *x, float *y, Physics &physics, Game &game,
   physics.velocity = 0;
   *x = physics.initial_x;
   *y = physics.initial_y;
-  pipes.clear(); // Clear the pipes
+  pipes.clear(); // clear all the pipes
 }
 
 void generate_pipes(std::vector<sf::Sprite> &pipes, sf::Texture &pipe) {
   int r = rand() % 175 + 50;
   int gap = 100;
-  int start = 288; // X position for both pipes
+  int start = 288; // initial x - axis
 
   // Lower pipe
   sf::Sprite lower_pipe;
@@ -124,9 +125,8 @@ void generate_pipes(std::vector<sf::Sprite> &pipes, sf::Texture &pipe) {
   sf::Sprite upper_pipe;
   upper_pipe.setTexture(pipe);
   upper_pipe.setRotation(180);
-  upper_pipe.setPosition(start + pipe.getSize().x, r); // Adjust position
+  upper_pipe.setPosition(start + pipe.getSize().x, r);
 
-  // Push to the array
   pipes.push_back(lower_pipe);
   pipes.push_back(upper_pipe);
 }
@@ -143,12 +143,8 @@ bool collision(const sf::Sprite &flappy, const std::vector<sf::Sprite> &pipes) {
   return false;
 }
 
-bool check_passed_pipe(const sf::Sprite &flappy, const sf::Sprite &pipe) {
-  return flappy.getPosition().x >
-         pipe.getPosition().x + pipe.getGlobalBounds().width;
-}
-
 int main() {
+  // basic settings
   sf::RenderWindow window(sf::VideoMode(288, 512), "Flappy Bird");
   window.setFramerateLimit(60);
   window.setKeyRepeatEnabled(false);
@@ -170,10 +166,7 @@ int main() {
   Physics physics;
 
   sf::Font font;
-  if (!font.loadFromFile("./font.ttf")) {
-    std::cerr << "Error loading font!" << std::endl;
-    return -1;
-  }
+  font.loadFromFile("./font.ttf");
 
   sf::Text score_text;
   score_text.setFont(font);
@@ -181,17 +174,17 @@ int main() {
   score_text.setFillColor(sf::Color::White);
   score_text.setPosition(10, 10);
 
-  // Create background and base sprites
+  // background sprite
   sf::Sprite background_s;
   background_s.setTexture(preference.background);
   background_s.setPosition(0, 0);
 
+  // base sprite at the bottom most
   sf::Sprite base_s;
-  base_s.setTexture(preference.base);
-  base_s.setPosition(0,
-                     window.getSize().y -
-                         preference.base.getSize().y); // Position at the bottom
+  base_s.setTexture(textures.base);
+  base_s.setPosition(0, window.getSize().y - textures.base.getSize().y);
 
+  // flappy sprite
   sf::Sprite flappy[3];
   flappy[0].setTexture(preference.flappy[0]);
   flappy[1].setTexture(preference.flappy[1]);
@@ -209,7 +202,7 @@ int main() {
       (window.getSize().x - gameover_s.getGlobalBounds().width) / 2,
       (window.getSize().y - gameover_s.getGlobalBounds().height) / 2);
 
-  // Set initial position for Flappy Bird
+  // flappy's position
   float x = physics.initial_x;
   float y = physics.initial_y;
 
@@ -242,7 +235,7 @@ int main() {
 
       if (y < 0 || y + flappy[0].getGlobalBounds().height >=
                        window.getSize().y - base_s.getGlobalBounds().height) {
-        // Bird hit the ground or flew off the screen
+        // flappy hit the ground or flew off the screen
         y = window.getSize().y - base_s.getGlobalBounds().height -
             flappy[0].getGlobalBounds().height;
         sounds.hit.play();
@@ -250,17 +243,18 @@ int main() {
         restart(&x, &y, physics, game, pipes_vec);
       }
 
+      // generate pipe every 150 frames
       if (game.frames % 150 == 0) {
         generate_pipes(pipes_vec, preference.pipe);
       }
 
-      // Move pipes
+      // move pipes every frame
       for (auto &pipe : pipes_vec) {
         pipe.move(-1.0f, 0.0f); // Move towards left by 1 pixel/frame
       }
 
       int pipe_width = preference.pipe.getSize().x;
-      // Remove pipes only after leaving the screen completely
+      // remove pipes that goes out off the windows' frame
       pipes_vec.erase(
           std::remove_if(pipes_vec.begin(), pipes_vec.end(),
                          [&](const sf::Sprite &pipe) {
@@ -268,7 +262,7 @@ int main() {
                          }),
           pipes_vec.end());
 
-      // Check for collisions
+      // check for collisions
       for (auto &pipe : pipes_vec) {
         if (collision(flappy[0], pipes_vec)) {
           sounds.hit.play();
@@ -277,12 +271,12 @@ int main() {
         }
       }
 
-      // Check for scoring based on generation frame and threshold
+      // counting scores based on frames insted of checking for pipes
       for (auto &pipe : pipes_vec) {
         if (!pipe.getTextureRect().contains(0, 0)) {
-          continue; // Skip lower pipes
+          continue; // skip lower pipes
         }
-        int threshold = 150 + 144; // Adjust threshold based on desired timing
+        int threshold = 150 + 144;
         if ((game.frames - 144) / 150 > game.score) {
           game.score++;
           sounds.point.play();
@@ -290,14 +284,16 @@ int main() {
       }
     }
 
-        if (game.score > game.frames) {
-            restart(&x, &y, physics, game, pipes_vec);
-        }
+    // prevent bug, where the score goes up at the same rate as the frame in the
+    // start that happends when you hit the sealing or base and die
+    if (game.score > game.frames) {
+      restart(&x, &y, physics, game, pipes_vec);
+    }
 
     window.clear();
     window.draw(background_s);
 
-    // Draw pipes
+    // draw pipes
     for (const auto &pipe : pipes_vec) {
       window.draw(pipe);
     }
@@ -308,13 +304,13 @@ int main() {
       window.draw(gameover_s);
     } else if (game.game_state == waiting) {
       window.draw(message_s);
-    } else {
+    } else { // draw flappy
       int frame = (game.frames / 5) % 3;
       flappy[frame].setPosition(x, y);
       window.draw(flappy[frame]);
     }
 
-    // Update and draw score
+    // update and draw score
     if (game.game_state == started) {
       score_text.setString(std::to_string(game.score));
       window.draw(score_text);
