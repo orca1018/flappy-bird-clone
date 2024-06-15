@@ -1,6 +1,7 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <vector>
 
 using namespace sf;
 
@@ -9,12 +10,12 @@ struct Audio {
   sf::SoundBuffer hit_buffer;
   sf::SoundBuffer point_buffer;
   sf::SoundBuffer swoosh_buffer;
-  sf::SoundBuffer wind_buffer;
+  sf::SoundBuffer wing_buffer;
   sf::Sound die;
   sf::Sound hit;
   sf::Sound point;
   sf::Sound swoosh;
-  sf::Sound wind;
+  sf::Sound wing;
 };
 
 void load_audio(Audio &sounds) {
@@ -26,8 +27,8 @@ void load_audio(Audio &sounds) {
   sounds.point.setBuffer(sounds.point_buffer);
   sounds.swoosh_buffer.loadFromFile("./audio/swoosh.wav");
   sounds.swoosh.setBuffer(sounds.swoosh_buffer);
-  sounds.wind_buffer.loadFromFile("./audio/wind.wav");
-  sounds.wind.setBuffer(sounds.wind_buffer);
+  sounds.wing_buffer.loadFromFile("./audio/wing.wav");
+  sounds.wing.setBuffer(sounds.wing_buffer);
 }
 
 struct Textures {
@@ -213,7 +214,6 @@ int main() {
       flappy[frame].setPosition(x, y);
       window.draw(flappy[frame]);
     }
-    flappy[0].setPosition(x, y);
     window.display();
 
     game.frames++;
