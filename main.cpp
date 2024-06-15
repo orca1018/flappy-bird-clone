@@ -99,13 +99,15 @@ struct Physics {
   const float initial_y = 256.0f;
 };
 
-void restart(float *x, float *y, Physics &physics, Game &game) {
+void restart(float *x, float *y, Physics &physics, Game &game,
+             std::vector<sf::Sprite> &pipes) {
   game.score = 0;
   game.frames = 0;
   game.game_state = waiting;
   physics.velocity = 0;
   *x = physics.initial_x;
   *y = physics.initial_y;
+  pipes.clear(); // Clear the pipes
 }
 
 void generate_pipes(std::vector<sf::Sprite> &pipes, sf::Texture &pipe) {
@@ -140,6 +142,7 @@ bool collision(const sf::Sprite &flappy, const std::vector<sf::Sprite> &pipes) {
   }
   return false;
 }
+
 int main() {
   sf::RenderWindow window(sf::VideoMode(288, 512), "Flappy Bird");
   window.setFramerateLimit(60);
@@ -208,7 +211,7 @@ int main() {
           physics.velocity = physics.flap_strength;
           sounds.swoosh.play();
         } else if (game.game_state == gameover) {
-          restart(&x, &y, physics, game);
+          restart(&x, &y, physics, game, pipes_vec);
         }
       } else if (event.type == Event::KeyPressed &&
                  event.key.code == Keyboard::Q) {
@@ -232,7 +235,7 @@ int main() {
             flappy[0].getGlobalBounds().height;
         sounds.hit.play();
         sounds.die.play();
-        restart(&x, &y, physics, game);
+        restart(&x, &y, physics, game, pipes_vec);
       }
 
       if (game.frames % 150 == 0) {
@@ -256,7 +259,7 @@ int main() {
       if (collision(flappy[0], pipes_vec)) {
         sounds.hit.play();
         sounds.die.play();
-        restart(&x, &y, physics, game);
+        restart(&x, &y, physics, game, pipes_vec);
       }
     }
 
