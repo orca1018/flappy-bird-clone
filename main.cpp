@@ -129,6 +129,17 @@ void generate_pipes(std::vector<sf::Sprite> &pipes, sf::Texture &pipe) {
   pipes.push_back(upper_pipe);
 }
 
+bool collision(const sf::Sprite &flappy, const std::vector<sf::Sprite> &pipes) {
+  sf::FloatRect flappy_bounds = flappy.getGlobalBounds();
+
+  for (const auto &pipe : pipes) {
+    sf::FloatRect pipe_bounds = pipe.getGlobalBounds();
+    if (flappy_bounds.intersects(pipe_bounds)) {
+      return true;
+    }
+  }
+  return false;
+}
 int main() {
   sf::RenderWindow window(sf::VideoMode(288, 512), "Flappy Bird");
   window.setFramerateLimit(60);
@@ -231,6 +242,21 @@ int main() {
       // Move pipes
       for (auto &pipe : pipes_vec) {
         pipe.move(-1.0f, 0.0f); // Move towards left by 1 pixel/frame
+      }
+
+      int pipe_width = preference.pipe.getSize().x;
+      // Remove pipes that are out of the frame
+      pipes_vec.erase(std::remove_if(pipes_vec.begin(), pipes_vec.end(),
+                                     [&](const sf::Sprite &pipe) {
+                                       return pipe.getPosition().x <
+                                              -pipe_width;
+                                     }),
+                      pipes_vec.end());
+      // Check for collisions
+      if (collision(flappy[0], pipes_vec)) {
+        sounds.hit.play();
+        sounds.die.play();
+        restart(&x, &y, physics, game);
       }
     }
 
