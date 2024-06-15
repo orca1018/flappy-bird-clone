@@ -108,6 +108,27 @@ void restart(float *x, float *y, Physics &physics, Game &game) {
   *y = physics.initial_y;
 }
 
+void generate_pipes(std::vector<sf::Sprite> &pipes, sf::Texture &pipe) {
+  int r = rand() % 275 + 75;
+  int gap = 100;
+  int start = 288; // X position for both pipes
+
+  // Lower pipe
+  sf::Sprite lower_pipe;
+  lower_pipe.setTexture(pipe);
+  lower_pipe.setPosition(start, r + gap);
+
+  // Upper pipe
+  sf::Sprite upper_pipe;
+  upper_pipe.setTexture(pipe);
+  upper_pipe.setRotation(180);
+  upper_pipe.setPosition(start + pipe.getSize().x, r); // Adjust position
+
+  // Push to the array
+  pipes.push_back(lower_pipe);
+  pipes.push_back(upper_pipe);
+}
+
 int main() {
   sf::RenderWindow window(sf::VideoMode(288, 512), "Flappy Bird");
   window.setFramerateLimit(60);
@@ -161,6 +182,8 @@ int main() {
   float x = physics.initial_x;
   float y = physics.initial_y;
 
+  std::vector<sf::Sprite> pipes_vec;
+
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -200,6 +223,12 @@ int main() {
         sounds.die.play();
         restart(&x, &y, physics, game);
       }
+
+      if (game.frames % 150 == 0) {
+        generate_pipes(pipes_vec, preference.pipe);
+      }
+
+      
     }
 
     window.clear();
@@ -213,6 +242,11 @@ int main() {
       int frame = (game.frames / 5) % 3;
       flappy[frame].setPosition(x, y);
       window.draw(flappy[frame]);
+    }
+
+    // Draw pipes
+    for (const auto &pipe : pipes_vec) {
+      window.draw(pipe);
     }
     window.display();
 
