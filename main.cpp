@@ -92,9 +92,9 @@ void settings(Preference &preference, const Textures &textures) {
 
 struct Physics {
   double velocity = 0.0f;
-  const float gravity = 0.35f;
-  const float flap_strength = -6.0f;
-  const float max_velocity = 15.0f;
+  const float gravity = 0.25f;
+  const float flap_strength = -4.5f;
+  const float max_velocity = 10.0f;
   const float initial_x = 144.0f;
   const float initial_y = 256.0f;
 };
@@ -111,7 +111,7 @@ void restart(float *x, float *y, Physics &physics, Game &game,
 }
 
 void generate_pipes(std::vector<sf::Sprite> &pipes, sf::Texture &pipe) {
-  int r = rand() % 275 + 75;
+  int r = rand() % 175 + 50;
   int gap = 100;
   int start = 288; // X position for both pipes
 
@@ -177,7 +177,7 @@ int main() {
 
   sf::Text score_text;
   score_text.setFont(font);
-  score_text.setCharacterSize(48); // Increase size to 48
+  score_text.setCharacterSize(48);
   score_text.setFillColor(sf::Color::White);
   score_text.setPosition(10, 10);
 
@@ -230,11 +230,7 @@ int main() {
         } else if (game.game_state == gameover) {
           restart(&x, &y, physics, game, pipes_vec);
         }
-      } else if (event.type == Event::KeyPressed &&
-                 event.key.code == Keyboard::Q) {
-        window.close(); // Remove this later, used when developing
-      }
-    }
+      }     }
 
     if (game.game_state == started) {
       physics.velocity += physics.gravity;
@@ -243,11 +239,9 @@ int main() {
       }
       y += physics.velocity;
 
-      if (y < 0) {
-        y = 0;
-        physics.velocity = 0;
-      } else if (y > window.getSize().y - base_s.getGlobalBounds().height -
-                         flappy[0].getGlobalBounds().height) {
+      if (y < 0 || y + flappy[0].getGlobalBounds().height >=
+                       window.getSize().y - base_s.getGlobalBounds().height) {
+        // Bird hit the ground or flew off the screen
         y = window.getSize().y - base_s.getGlobalBounds().height -
             flappy[0].getGlobalBounds().height;
         sounds.hit.play();
@@ -265,36 +259,46 @@ int main() {
       }
 
       int pipe_width = preference.pipe.getSize().x;
-      // Remove pipes that are out of the frame
-      pipes_vec.erase(std::remove_if(pipes_vec.begin(), pipes_vec.end(),
-                                     [&](const sf::Sprite &pipe) {
-                                       return pipe.getPosition().x <
-                                              -pipe_width;
-                                     }),
-                      pipes_vec.end());
+      // Remove pipes only after leaving the screen completely
+      pipes_vec.erase(
+          std::remove_if(pipes_vec.begin(), pipes_vec.end(),
+                         [&](const sf::Sprite &pipe) {
+                           return pipe.getPosition().x + pipe_width < 0;
+                         }),
+          pipes_vec.end());
 
       // Check for collisions
-      if (collision(flappy[0], pipes_vec)) {
-        sounds.hit.play();
-        sounds.die.play();
-        restart(&x, &y, physics, game, pipes_vec);
+      for (auto &pipe : pipes_vec) {
+        if (collision(flappy[0], pipes_vec)) {
+          sounds.hit.play();
+          sounds.die.play();
+          restart(&x, &y, physics, game, pipes_vec);
+        }
       }
 
-      // Check if flappy bird has passed pipes
+      // Check for scoring based on generation frame and threshold
       for (auto &pipe : pipes_vec) {
-        if (!pipe.getTextureRect().contains(0, 0))
+        if (!pipe.getTextureRect().contains(0, 0)) {
           continue; // Skip lower pipes
-        if (check_passed_pipe(flappy[0], pipe)) {
+        }
+        int threshold = 150 + 144; // Adjust threshold based on desired timing
+        if ((game.frames - 144) / 150 > game.score) {
           game.score++;
           sounds.point.play();
-          pipe.setTextureRect(sf::IntRect()); // Mark pipe as counted
         }
       }
     }
 
     window.clear();
     window.draw(background_s);
+
+    // Draw pipes
+    for (const auto &pipe : pipes_vec) {
+      window.draw(pipe);
+    }
+
     window.draw(base_s);
+
     if (game.game_state == gameover) {
       window.draw(gameover_s);
     } else if (game.game_state == waiting) {
@@ -305,14 +309,11 @@ int main() {
       window.draw(flappy[frame]);
     }
 
-    // Draw pipes
-    for (const auto &pipe : pipes_vec) {
-      window.draw(pipe);
-    }
-
     // Update and draw score
-    score_text.setString(std::to_string(game.score));
-    window.draw(score_text);
+    if (game.game_state == started) {
+      score_text.setString(std::to_string(game.score));
+      window.draw(score_text);
+    }
 
     window.display();
 
