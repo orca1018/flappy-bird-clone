@@ -143,6 +143,11 @@ bool collision(const sf::Sprite &flappy, const std::vector<sf::Sprite> &pipes) {
   return false;
 }
 
+bool check_passed_pipe(const sf::Sprite &flappy, const sf::Sprite &pipe) {
+  return flappy.getPosition().x >
+         pipe.getPosition().x + pipe.getGlobalBounds().width;
+}
+
 int main() {
   sf::RenderWindow window(sf::VideoMode(288, 512), "Flappy Bird");
   window.setFramerateLimit(60);
@@ -163,6 +168,18 @@ int main() {
   settings(preference, textures);
 
   Physics physics;
+
+  sf::Font font;
+  if (!font.loadFromFile("./font.ttf")) {
+    std::cerr << "Error loading font!" << std::endl;
+    return -1;
+  }
+
+  sf::Text score_text;
+  score_text.setFont(font);
+  score_text.setCharacterSize(48); // Increase size to 48
+  score_text.setFillColor(sf::Color::White);
+  score_text.setPosition(10, 10);
 
   // Create background and base sprites
   sf::Sprite background_s;
@@ -255,11 +272,23 @@ int main() {
                                               -pipe_width;
                                      }),
                       pipes_vec.end());
+
       // Check for collisions
       if (collision(flappy[0], pipes_vec)) {
         sounds.hit.play();
         sounds.die.play();
         restart(&x, &y, physics, game, pipes_vec);
+      }
+
+      // Check if flappy bird has passed pipes
+      for (auto &pipe : pipes_vec) {
+        if (!pipe.getTextureRect().contains(0, 0))
+          continue; // Skip lower pipes
+        if (check_passed_pipe(flappy[0], pipe)) {
+          game.score++;
+          sounds.point.play();
+          pipe.setTextureRect(sf::IntRect()); // Mark pipe as counted
+        }
       }
     }
 
@@ -280,6 +309,11 @@ int main() {
     for (const auto &pipe : pipes_vec) {
       window.draw(pipe);
     }
+
+    // Update and draw score
+    score_text.setString(std::to_string(game.score));
+    window.draw(score_text);
+
     window.display();
 
     game.frames++;
