@@ -227,8 +227,6 @@ int main() {
       if (game.frames % 150 == 0) {
         generate_pipes(pipes_vec, preference.pipe);
       }
-
-      
     }
 
     window.clear();
