@@ -129,13 +129,13 @@ int main() {
   Physics physics;
 
   // Create background and base sprites
-  sf::Sprite background;
-  background.setTexture(preference.background);
-  background.setPosition(0, 0);
+  sf::Sprite background_s;
+  background_s.setTexture(preference.background);
+  background_s.setPosition(0, 0);
 
-  sf::Sprite base;
-  base.setTexture(preference.base);
-  base.setPosition(0,
+  sf::Sprite base_s;
+  base_s.setTexture(preference.base);
+  base_s.setPosition(0,
                    window.getSize().y -
                        preference.base.getSize().y); // Position at the bottom
 
@@ -143,6 +143,18 @@ int main() {
   flappy[0].setTexture(preference.flappy[0]);
   flappy[1].setTexture(preference.flappy[1]);
   flappy[2].setTexture(preference.flappy[2]);
+
+  sf::Sprite message_s;
+  message_s.setTexture(textures.message);
+  message_s.setPosition(
+      (window.getSize().x - message_s.getGlobalBounds().width) / 2,
+      (window.getSize().y - message_s.getGlobalBounds().height) / 2);
+
+  sf::Sprite gameover_s;
+  gameover_s.setTexture(textures.gameover);
+  gameover_s.setPosition(
+      (window.getSize().x - gameover_s.getGlobalBounds().width) / 2,
+      (window.getSize().y - gameover_s.getGlobalBounds().height) / 2);
 
   // Set initial position for Flappy Bird
   float x = physics.initial_x;
@@ -163,6 +175,9 @@ int main() {
         } else if (game.game_state == gameover) {
           restart(&x, &y, physics, game);
         }
+      } else if (event.type == Event::KeyPressed &&
+                 event.key.code == Keyboard::Q) {
+        window.close(); // Remove this later, used when developing
       }
     }
 
@@ -176,9 +191,9 @@ int main() {
       if (y < 0) {
         y = 0;
         physics.velocity = 0;
-      } else if (y > window.getSize().y - base.getGlobalBounds().height -
+      } else if (y > window.getSize().y - base_s.getGlobalBounds().height -
                          flappy[0].getGlobalBounds().height) {
-        y = window.getSize().y - base.getGlobalBounds().height -
+        y = window.getSize().y - base_s.getGlobalBounds().height -
             flappy[0].getGlobalBounds().height;
         physics.velocity = 0;
         game.game_state = gameover;
@@ -188,8 +203,16 @@ int main() {
     }
 
     window.clear();
-    window.draw(background);
-    window.draw(base);
+    window.draw(background_s);
+    window.draw(base_s);
+    if (game.game_state == gameover) {
+      window.draw(gameover_s);
+    } else if (game.game_state == waiting) {
+      window.draw(message_s);
+    } else {
+      flappy[0].setPosition(x, y);
+      window.draw(flappy[0]);
+    }
     flappy[0].setPosition(x, y);
     window.draw(flappy[0]);
     window.display();
