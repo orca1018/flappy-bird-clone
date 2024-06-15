@@ -227,6 +227,11 @@ int main() {
       if (game.frames % 150 == 0) {
         generate_pipes(pipes_vec, preference.pipe);
       }
+
+      // Move pipes
+      for (auto &pipe : pipes_vec) {
+        pipe.move(-1.0f, 0.0f); // Move towards left by 1 pixel/frame
+      }
     }
 
     window.clear();
