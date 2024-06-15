@@ -84,3 +84,19 @@ You can customize the game's appearance and behavior by modifying the settings i
 - **Pipes**: Modify the pipes' appearance (green or red), spacing, or speed.
 
 Feel free to experiment with different settings to make the game your own!
+
+## Ranking
+`Feature in development`
+Here's the current ranking for the Flappy Bird clone challenge:
+
+| Rank | Username       | Score |
+|------|----------------|-------|
+| 1    | orca1018       | 58    |
+
+You can submit your score in the submission director. 
+
+## Credits
+I would like to give credit to the following repositories for providing inspiration and assets for this project:
+- [inspiration](https://github.com/DenizBasgoren/sfml-flappy-bird)
+- [assets](https://github.com/samuelcust/flappy-bird-assets)
+
