@@ -68,12 +68,12 @@ void load_textures(Textures &textures) {
   textures.pipe[1].loadFromFile("./sprites/pipe-red.png");
 }
 
-enum game_state { waiting, started, gameover };
+enum enum_game_state { waiting, started, gameover };
 
 struct Game {
   unsigned short int score = 0;
   unsigned int frames = 0;
-  game_state game_state = waiting;
+  enum_game_state game_state = waiting;
 };
 
 struct Preference {
